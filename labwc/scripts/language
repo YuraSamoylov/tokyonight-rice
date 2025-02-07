@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Устанавливаем раскладку клавиатуры один раз
+setxkbmap -layout "us,ru" -option "grp:toggle,caps:swapescape"
+
+get_layout() {
+   setxkbmap -query | grep layout | awk '{print $2}'
+}
+
+toggle_layout() {
+   current_layout=$(get_layout)
+   if [ "$current_layout" == "us" ]; then
+       setxkbmap ru
+   else
+       setxkbmap us
+   fi
+}
+
+# Проверяем аргументы для переключения раскладки
+if [ "$1" == "toggle" ]; then
+   toggle_layout
+   exit 0
+fi
+
+# Главное тело скрипта
+while true; do
+  current_layout=$(get_layout)
+
+  # Форматируем вывод в JSON для Waybar
+  echo "{\"text\": \"$current_layout\", \"tooltip\": \"Нажмите для переключения раскладки\", \"alt\": \"$current_layout\"}"
+  sleep 1
+done
